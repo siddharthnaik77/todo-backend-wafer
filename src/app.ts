@@ -15,8 +15,10 @@ app.use(express.json());
 
 app.use("/api/tasks", taskRoutes);
 
-sequelize.sync({alter:true}).then(() => {
-  console.log("Database synced!");
-});
 
+if (process.env.USE_DB === "true") {
+  sequelize.sync({ alter: true }).then(() => {
+    console.log("Database synced!");
+  });
+}
 export default app;
