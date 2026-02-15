@@ -4,7 +4,7 @@ import sequelize from "../config/db";
 const useDb = process.env.USE_DB === "true";
 
 export interface TaskAttributes {
-  id: number;
+  id?: number;
   name: string;
   description: string;
   status: string;
