@@ -1,30 +1,7 @@
 import express from "express";
-const cors = require("cors");
 import taskRoutes from "./routes/taskRoutes";
 
 const app = express();
-
-// Enable CORS for all origins (can be restricted later)
-app.use(cors({
-  origin: true,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  optionsSuccessStatus: 200
-}));
-
-// Explicit CORS headers
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  
-  // Handle preflight requests
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
 
 app.use(express.json());
 
@@ -34,6 +11,11 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/tasks", taskRoutes);
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ message: "Not found" });
+});
 
 // Error handling middleware
 app.use((err: any, req: any, res: any, next: any) => {
