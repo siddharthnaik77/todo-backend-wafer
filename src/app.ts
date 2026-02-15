@@ -1,7 +1,21 @@
 import express from "express";
+import cors from "cors";
 import taskRoutes from "./routes/taskRoutes";
 
 const app = express();
+
+// CORS middleware - allow requests from frontend
+app.use(
+  cors({
+    origin: [
+      "https://todo-frontend-wafer.vercel.app",
+      "http://localhost:3000",
+      "http://localhost:5000",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
