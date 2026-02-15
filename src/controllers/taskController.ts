@@ -10,7 +10,7 @@ import {
 } from "../utils/fileStorage";
 
 const useDb = process.env.USE_DB === "true";
-console.log("Using DB:", useDb);
+console.log("Using DB:",typeof useDb);
 /**
  * Get all tasks
  */
