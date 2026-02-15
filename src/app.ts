@@ -1,7 +1,7 @@
 import express from "express";
 const cors = require("cors");
 import taskRoutes from "./routes/taskRoutes";
-import sequelize from "./config/db";
+//import sequelize from "./config/db";
 
 const app = express();
 
@@ -17,8 +17,8 @@ app.use("/api/tasks", taskRoutes);
 
 
 if (process.env.USE_DB === "true") {
-  sequelize.sync({ alter: true }).then(() => {
-    console.log("Database synced!");
-  });
+  // sequelize.sync({ alter: true }).then(() => {
+  //   console.log("Database synced!");
+  // });
 }
 export default app;
