@@ -9,7 +9,8 @@ import {
   FileTask,
 } from "../utils/fileStorage";
 
-const useDb = process.env.USE_DB === "true";
+// const useDb = process.env.USE_DB === true;
+const useDb = false
 console.log("Using DB:",typeof useDb);
 /**
  * Get all tasks
