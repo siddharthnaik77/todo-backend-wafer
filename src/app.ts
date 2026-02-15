@@ -4,17 +4,27 @@ import taskRoutes from "./routes/taskRoutes";
 
 const app = express();
 
-// Enable CORS for frontend
+// Enable CORS for all origins (can be restricted later)
 app.use(cors({
-  origin: [
-    "https://todo-frontend-wafer.vercel.app",
-    "http://localhost:3000",
-    "http://localhost:5000"
-  ],
+  origin: true,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200
 }));
+
+// Explicit CORS headers
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 app.use(express.json());
 
@@ -25,7 +35,7 @@ app.get("/health", (req, res) => {
 
 app.use("/api/tasks", taskRoutes);
 
-
+// Error handling middleware
 app.use((err: any, req: any, res: any, next: any) => {
   console.error("Error:", err);
   res.status(500).json({ message: "Internal server error" });
