@@ -4,7 +4,18 @@ import taskRoutes from "./routes/taskRoutes";
 
 const app = express();
 
-app.use(cors());
+// Enable CORS for frontend
+app.use(cors({
+  origin: [
+    "https://todo-frontend-wafer.vercel.app",
+    "http://localhost:3000",
+    "http://localhost:5000"
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json());
 
 // Health check endpoint
