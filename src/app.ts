@@ -14,7 +14,7 @@ app.get("/health", (req, res) => {
 
 app.use("/api/tasks", taskRoutes);
 
-// Error handling middleware
+
 app.use((err: any, req: any, res: any, next: any) => {
   console.error("Error:", err);
   res.status(500).json({ message: "Internal server error" });
