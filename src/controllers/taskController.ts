@@ -1,6 +1,5 @@
+// src/controllers/taskController.ts
 import { Request, Response } from "express";
-import Task from "../models/task";
-import { Op } from "sequelize";
 import {
   readTasks,
   appendTask,
@@ -10,6 +9,14 @@ import {
 } from "../utils/fileStorage";
 
 const useDb = process.env.USE_DB === "true";
+
+let Task: any, Op: any;
+if (useDb) {
+  // Dynamically import only if using DB
+  const taskModule = require("../models/task");
+  Task = taskModule.Task;
+  Op = require("sequelize").Op;
+}
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
@@ -24,8 +31,9 @@ export const getTasks = async (req: Request, res: Response) => {
     }
 
     // File-based
-    const tasks = await readTasks();
+    const tasks: FileTask[] = await readTasks();
     let filtered = tasks.slice().sort((a, b) => b.id - a.id);
+
     if (name) {
       const n = String(name).toLowerCase();
       filtered = filtered.filter((t) => t.name.toLowerCase().includes(n));
@@ -33,16 +41,18 @@ export const getTasks = async (req: Request, res: Response) => {
     if (status && status !== "All") {
       filtered = filtered.filter((t) => t.status === status);
     }
+
     return res.status(200).json(filtered);
   } catch (error) {
     console.error("Error fetching tasks:", error);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
 export const addTask = async (req: Request, res: Response) => {
   try {
     const { name, description, status } = req.body;
+
     if (useDb) {
       const task = await Task.create({ name, description, status });
       return res.json(task);
@@ -52,7 +62,7 @@ export const addTask = async (req: Request, res: Response) => {
     return res.json(newTask);
   } catch (err) {
     console.error("Error adding task:", err);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -60,6 +70,7 @@ export const updateTask = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, status, description } = req.body;
+
     if (useDb) {
       await Task.update({ name, status, description }, { where: { id } });
       return res.json({ message: "Task updated" });
@@ -70,13 +81,14 @@ export const updateTask = async (req: Request, res: Response) => {
     return res.json({ message: "Task updated" });
   } catch (err) {
     console.error("Error updating task:", err);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
 export const deleteTask = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+
     if (useDb) {
       await Task.destroy({ where: { id } });
       return res.json({ message: "Task deleted" });
@@ -87,6 +99,6 @@ export const deleteTask = async (req: Request, res: Response) => {
     return res.json({ message: "Task deleted" });
   } catch (err) {
     console.error("Error deleting task:", err);
-    res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
