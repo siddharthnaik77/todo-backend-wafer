@@ -1,36 +1,48 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, Sequelize } from "sequelize";
 import sequelize from "../config/db";
 
-class Task extends Model {
+const useDb = process.env.USE_DB === "true";
+
+export interface TaskAttributes {
+  id: number;
+  name: string;
+  description: string;
+  status: string;
+}
+
+export class Task extends Model<TaskAttributes> implements TaskAttributes {
   public id!: number;
   public name!: string;
+  public description!: string;
   public status!: string;
 }
 
-Task.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    description:{
+// Only define the model if USE_DB is true
+if (useDb && sequelize) {
+  Task.init(
+    {
+      id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+      },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
-    status: {
-      type: DataTypes.ENUM("Complete", "Incomplete"),
-      defaultValue: "Incomplete"
+    {
+      sequelize,
+      tableName: "tasks",
+      modelName: "Task",
     }
-  },
-  {
-    sequelize,
-    tableName: "tasks"
-  }
-);
-
-export default Task;
+  );
+}
