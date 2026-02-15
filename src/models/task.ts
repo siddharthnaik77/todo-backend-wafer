@@ -1,7 +1,16 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
-import sequelize from "../config/db";
 
 const useDb = process.env.USE_DB === "true";
+
+let sequelize: Sequelize | null = null;
+
+if (useDb) {
+  try {
+    sequelize = require("../config/db").default;
+  } catch (error) {
+    console.warn("Database config not available");
+  }
+}
 
 export interface TaskAttributes {
   id?: number;
